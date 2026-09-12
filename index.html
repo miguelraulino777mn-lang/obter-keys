@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DevHub Lua</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #0f0f17;
+    color: #fff;
+    font-family: -apple-system, Arial, sans-serif;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+  }
+  .caixa {
+    background: #1a1a26;
+    border-radius: 20px;
+    padding: 30px 24px;
+    width: 100%;
+    max-width: 400px;
+    text-align: center;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+  }
+  h1 {
+    font-size: 28px;
+    margin-bottom: 8px;
+    background: linear-gradient(90deg, #00ff9d, #00aaff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .sub {
+    color: #8888aa;
+    font-size: 14px;
+    margin-bottom: 25px;
+  }
+  .key-box {
+    background: #0f0f17;
+    border: 2px dashed #00ff9d;
+    border-radius: 14px;
+    padding: 18px;
+    margin-bottom: 15px;
+  }
+  .label {
+    color: #8888aa;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+  }
+  .key {
+    font-family: monospace;
+    font-size: 22px;
+    color: #00ff9d;
+    font-weight: bold;
+    letter-spacing: 2px;
+  }
+  .timer {
+    color: #ffaa00;
+    font-size: 13px;
+    margin-top: 10px;
+  }
+  button {
+    background: linear-gradient(90deg, #00ff9d, #00aaff);
+    color: #0f0f17;
+    border: none;
+    padding: 14px;
+    width: 100%;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: transform 0.2s;
+  }
+  button:active { transform: scale(0.97); }
+  .info {
+    color: #666688;
+    font-size: 12px;
+    margin-top: 20px;
+    line-height: 1.6;
+  }
+</style>
+</head>
+<body>
+  <div class="caixa">
+    <h1>DevHub Lua</h1>
+    <p class="sub">Scripts, keys e ferramentas pra devs</p>
+
+    <div class="key-box">
+      <div class="label">🔑 Key de hoje</div>
+      <div class="key" id="keyAtiva">CARREGANDO...</div>
+      <div class="timer" id="timer">calculando...</div>
+    </div>
+
+    <button onclick="copiarKey()">📋 Copiar Key</button>
+
+    <p class="info">
+      A key troca automaticamente a cada 24h.<br>
+      Cole no seu script pra liberar o menu.
+    </p>
+  </div>
+
+<script>
+  // ============================================
+  // 🔑 AS 50 KEYS (troque pelos teus valores)
+  // ============================================
+  const keys = [
+    "DEV001","DEV002","DEV003","DEV004","DEV005",
+    "DEV006","DEV007","DEV008","DEV009","DEV010",
+    "DEV011","DEV012","DEV013","DEV014","DEV015",
+    "DEV016","DEV017","DEV018","DEV019","DEV020",
+    "DEV021","DEV022","DEV023","DEV024","DEV025",
+    "DEV026","DEV027","DEV028","DEV029","DEV030",
+    "DEV031","DEV032","DEV033","DEV034","DEV035",
+    "DEV036","DEV037","DEV038","DEV039","DEV040",
+    "DEV041","DEV042","DEV043","DEV044","DEV045",
+    "DEV046","DEV047","DEV048","DEV049","DEV050"
+  ];
+
+  // ============================================
+  // 🕐 CALCULA QUAL KEY TÁ ATIVA AGORA
+  // ============================================
+  function getKeyAtiva() {
+    const agora = Date.now();
+    const dia = Math.floor(agora / 86400000); // 24h em ms
+    const indice = dia % 50; // ← agora são 50 keys
+    return keys[indice];
+  }
+
+  // ============================================
+  // ⏳ QUANTO TEMPO FALTA PRA TROCAR
+  // ============================================
+  function getTempoRestante() {
+    const agora = Date.now();
+    const proximaTroca = (Math.floor(agora / 86400000) + 1) * 86400000;
+    const falta = proximaTroca - agora;
+
+    const horas = Math.floor(falta / 3600000);
+    const minutos = Math.floor((falta % 3600000) / 60000);
+
+    return `${horas}h ${minutos}min`;
+  }
+
+  // ============================================
+  // 📋 COPIAR PRA ÁREA DE TRANSFERÊNCIA
+  // ============================================
+  function copiarKey() {
+    const key = document.getElementById("keyAtiva").innerText;
+    navigator.clipboard.writeText(key).then(() => {
+      const btn = document.querySelector("button");
+      const textoOriginal = btn.innerText;
+      btn.innerText = "✅ Copiado!";
+      setTimeout(() => btn.innerText = textoOriginal, 1500);
+    });
+  }
+
+  // ============================================
+  // 🚀 INICIA E ATUALIZA SOZINHO
+  // ============================================
+  function atualizar() {
+    document.getElementById("keyAtiva").innerText = getKeyAtiva();
+    document.getElementById("timer").innerText = "⏳ Troca em " + getTempoRestante();
+  }
+
+  atualizar();
+  setInterval(atualizar, 60000); // atualiza a cada 1 min
+</script>
+</body>
+</html>
